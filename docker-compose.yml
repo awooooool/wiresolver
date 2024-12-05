@@ -1,0 +1,59 @@
+services:
+  powerdns:
+    image: awooooool/pdns-recursor-51
+    build:
+      context: .
+      dockerfile: Dockerfile/powerdns.Dockerfile
+    restart: unless-stopped
+    networks:
+      wiresolver:
+        ipv4_address: 10.2.0.200
+
+  pihole:
+    image: pihole/pihole
+    restart: unless-stopped
+    depends_on:
+      - powerdns
+    environment:
+      - PIHOLE_DNS_=powerdns
+    env_file: .env
+    volumes:
+      - ./etc/pihole:/etc/pihole
+      - ./etc/dnsmasq.d:/etc/dnsmasq.d
+    dns:
+      - 127.0.0.1
+      - 10.2.0.200
+    networks:
+      wiresolver:
+        ipv4_address: 10.2.0.100
+
+  wireguard:
+    image: linuxserver/wireguard
+    restart: unless-stopped
+    volumes:
+      - ./etc/wireguard:/config
+    environment:
+      - PEERDNS=10.2.0.100
+      - PUID=1000
+      - PGID=1000
+    env_file: .env
+    depends_on:
+      - pihole
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    networks:
+      wiresolver:
+        ipv4_address: 10.2.0.3
+    sysctls:
+      net.ipv4.conf.all.src_valid_mark: 1
+      net.ipv4.ip_forward: 1
+    ports:
+      - 51820:51820/udp
+
+networks:
+  wiresolver:
+    ipam:
+      driver: default
+      config:
+        - subnet: 10.2.0.0/24

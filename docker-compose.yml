@@ -16,6 +16,7 @@ services:
       - powerdns
     environment:
       - PIHOLE_DNS_=powerdns
+      - FTLCONF_LOCAL_IPV4=10.2.0.100
     env_file: .env
     volumes:
       - ./etc/pihole:/etc/pihole

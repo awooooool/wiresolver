@@ -1,8 +1,6 @@
 incoming:
   listen:
     - '0.0.0.0'
-  allow_from:
-    - '10.2.0.100'
 
 dnssec:
   validation: validate

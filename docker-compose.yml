@@ -8,6 +8,7 @@ services:
     networks:
       wiresolver:
         ipv4_address: 10.2.0.200
+        ipv6_address: fc00:dead:beef::200
 
   pihole:
     image: pihole/pihole
@@ -15,17 +16,20 @@ services:
     depends_on:
       - powerdns
     environment:
-      - PIHOLE_DNS_=powerdns
-      - FTLCONF_LOCAL_IPV4=10.2.0.100
+      FTLCONF_dns_upstreams: powerdns
+      FTLCONF_webserver_api_password: ''
+      FTLCONF_dns_listeningMode: 'all'
     env_file: .env
     volumes:
       - ./etc/pihole:/etc/pihole
       - ./etc/dnsmasq.d:/etc/dnsmasq.d
     dns:
       - 10.2.0.200
+      - fc00:dead:beef::200
     networks:
       wiresolver:
         ipv4_address: 10.2.0.100
+        ipv6_address: fc00:dead:beef::100
 
   wireguard:
     image: linuxserver/wireguard
@@ -33,7 +37,7 @@ services:
     volumes:
       - ./etc/wireguard:/config
     environment:
-      - PEERDNS=10.2.0.100
+      - PEERDNS=10.2.0.100,fc00:dead:beef::100
       - PUID=1000
       - PGID=1000
     env_file: .env
@@ -45,6 +49,7 @@ services:
     networks:
       wiresolver:
         ipv4_address: 10.2.0.3
+        ipv6_address: fc00:dead:beef::3
     sysctls:
       net.ipv4.conf.all.src_valid_mark: 1
       net.ipv4.ip_forward: 1
@@ -56,4 +61,5 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 10.2.0.0/24
+        - subnet: "10.2.0.0/24"
+        - subnet: "fc00:dead:beef::/64"

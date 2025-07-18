@@ -1,6 +1,6 @@
 services:
   powerdns:
-    image: awooooool/pdns-recursor-51
+    image: awooooool/pdns-recursor-52
     build:
       context: .
       dockerfile: Dockerfile/powerdns.Dockerfile

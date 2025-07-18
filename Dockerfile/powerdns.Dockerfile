@@ -1,4 +1,4 @@
-FROM powerdns/pdns-recursor-51
+FROM powerdns/pdns-recursor-52
 
 USER root
 

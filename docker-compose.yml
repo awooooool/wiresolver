@@ -60,7 +60,7 @@ networks:
   wiresolver:
     enable_ipv6: true
     ipam:
-      driver: bridge
+      driver: default
       config:
         - subnet: "10.2.0.0/24"
         - subnet: "fc00:dead:beef::/64"
